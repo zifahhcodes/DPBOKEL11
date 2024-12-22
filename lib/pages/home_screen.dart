@@ -172,25 +172,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Dashboard'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Courses'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
-        ],
-        currentIndex: 1,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushNamed(context, '/'); 
-          } else if (index == 1) {
-            Navigator.pushNamed(context, '/home'); 
-          } else if (index == 2) {
-            Navigator.pushNamed(context, '/profile');
-          }
-        },
-      ),
     );
   }
 

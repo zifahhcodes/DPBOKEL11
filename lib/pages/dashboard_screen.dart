@@ -11,12 +11,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: DashboardScreen(),
+      home: DashboardPage(),
     );
   }
 }
 
-class DashboardScreen extends StatelessWidget {
+class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,25 +185,6 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Dashboard'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Courses'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
-        ],
-        currentIndex: 0,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushNamed(context, '/'); 
-          } else if (index == 1) {
-            Navigator.pushNamed(context, '/home'); 
-          } else if (index == 2) {
-            Navigator.pushNamed(context, '/profile');
-          }
-        },
       ),
     );
   }
