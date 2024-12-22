@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -62,26 +61,39 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Text(
-                      'Hello, Hafizh!',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundImage:
+                          AssetImage('assets/images/profile_picture.png'),
+                    ),
+                    SizedBox(width: 10), // Add spacing between the image and text
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hello, teacher_name!',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'What would you like to learn today?',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          SizedBox(height: 10),
+                          LinearProgressIndicator(
+                            value: 0.6,
+                            backgroundColor: Colors.grey.shade200,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.green),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Level 3',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: 0.6,
-                      backgroundColor: Colors.grey.shade200,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                     ),
                   ],
                 ),
@@ -90,14 +102,14 @@ class HomeScreen extends StatelessWidget {
 
               // Grade Section
               Text(
-                'Student - Grade 12',
+                'Teacher - Kurikulum Merdeka',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               SizedBox(height: 10),
 
               // Available Subjects Section
               Text(
-                'Available Subjects',
+                'Available Courses',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
@@ -108,18 +120,18 @@ class HomeScreen extends StatelessWidget {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 children: [
-                  _buildSubjectButton(context, 'Mathematics',
+                  _buildSubjectButton(context, 'Teaching Highschool \nMathematics',
                       'assets/images/math.svg', Colors.blue),
-                  _buildSubjectButton(context, 'Biology',
+                  _buildSubjectButton(context, 'Teaching Highschool Biology',
                       'assets/images/biology.svg', Colors.green),
-                  _buildSubjectButton(context, 'Geography',
+                  _buildSubjectButton(context, 'Curriculum Planning',
                       'assets/images/geography.svg', Colors.orange),
-                  _buildSubjectButton(context, 'History',
+                  _buildSubjectButton(context, 'Educational Management',
                       'assets/images/history.svg', Colors.red),
-                  _buildSubjectButton(context, 'English',
+                  _buildSubjectButton(context, 'learning Strategies',
                       'assets/images/english.svg', Colors.yellow),
                   _buildSubjectButton(context, 'See others...',
-                      'assets/images/others.png', Colors.grey),
+                      'assets/images/others.png', Colors.black),
                 ],
               ),
               SizedBox(height: 20),
@@ -162,25 +174,19 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart), label: 'Dashboard'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Cart'),
-          BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Messages'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Courses'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
         ],
-        currentIndex: 0,
+        currentIndex: 1,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushNamed(context, '/home'); // Current page
+            Navigator.pushNamed(context, '/'); 
           } else if (index == 1) {
-            Navigator.pushNamed(context, '/'); // Dashboard page
-          } else if (index == 3) {
-            Navigator.pushNamed(context, '/messages');
-          } else if (index == 4) {
+            Navigator.pushNamed(context, '/home'); 
+          } else if (index == 2) {
             Navigator.pushNamed(context, '/profile');
           }
         },
@@ -207,10 +213,11 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(imagePath, height: 50, width: 50),
+            SvgPicture.asset(imagePath, height: 150, width: 150),
             SizedBox(height: 10),
             Text(
               title,
+              textAlign: TextAlign.center,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ],

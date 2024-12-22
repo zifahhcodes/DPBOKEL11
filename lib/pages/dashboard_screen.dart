@@ -66,13 +66,13 @@ class DashboardScreen extends StatelessWidget {
                 // Statistics Cards
                 Center(
                   child: Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
+                    spacing: 20,
+                    runSpacing: 20,
                     children: [
-                      _buildStatCard('Total Students', '1281', Colors.blue, 'assets/images/students.svg'),
-                      _buildStatCard('Total Teachers', '391', Colors.yellow, 'assets/images/teacher.svg'),
-                      _buildStatCard('Total Courses', '23', Colors.green, 'assets/images/courses.svg'),
-                      _buildStatCard('Total Faculties', '12', Colors.red, 'assets/images/faculty.svg'),
+                      //_buildStatCard('Total Students', '1281', Colors.blue, 'assets/images/students.svg'),
+                      _buildStatCard('Total Teachers', '21', Colors.yellow, 'assets/images/teacher.svg'),
+                      _buildStatCard('Total Courses', '4', Colors.green, 'assets/images/courses.svg'),
+                      // _buildStatCard('Total Faculties', '12', Colors.red, 'assets/images/faculty.svg'), //removed faculties and students, unrequired for now
                     ],
                   ),
                 ),
@@ -111,7 +111,7 @@ class DashboardScreen extends StatelessWidget {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                             ),
                             Text(
-                              '70%',
+                              '73%',
                               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -188,25 +188,19 @@ class DashboardScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart), label: 'Dashboard'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Cart'),
-          BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Messages'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Courses'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
         ],
-        currentIndex: 1,
+        currentIndex: 0,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushNamed(context, '/home'); 
-          } else if (index == 1) {
             Navigator.pushNamed(context, '/'); 
-          } else if (index == 3) {
-            Navigator.pushNamed(context, '/messages');
-            } else if (index == 4) {
+          } else if (index == 1) {
+            Navigator.pushNamed(context, '/home'); 
+          } else if (index == 2) {
             Navigator.pushNamed(context, '/profile');
           }
         },
@@ -217,11 +211,12 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildStatCard(String title, String count, Color color, String imagePath) {
     return Container(
-      width: 150,
+      width: 200,
+      height: 200,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade300,
