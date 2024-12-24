@@ -22,7 +22,6 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.yellow,
-        leading: Icon(Icons.arrow_back, color: Colors.black),
         title: Row(
           children: [
             Image.asset('assets/images/edusynclogo.png', height: 100),

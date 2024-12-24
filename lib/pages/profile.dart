@@ -1,6 +1,9 @@
+import 'package:edusync/main.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'register.dart';
+import '../database/database_helper.dart';
+import 'package:edusync/JSON/teacture.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -91,7 +94,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           'Logout',
                   style: TextStyle(color: Colors.red),
                 ),
-                  onTap: () {},
+                  onTap: () async {
+                    final dbHelper = DatabaseHelper(); 
+                    await dbHelper.logout(); // Wait for logout to complete
+                    
+                    // Navigate to LoginPage after clearing the session
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => DashboardScreen()),
+                    );
+                  },
                 ),
               ],
             ),

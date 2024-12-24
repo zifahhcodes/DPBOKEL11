@@ -1,13 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'login.dart';
+import 'register.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String? tcrName; // Variabel untuk menyimpan nama pengguna
+
+  @override
+  void initState() {
+    super.initState();
+    checkSession(); // Cek session saat aplikasi dimulai
+  }
+
+  Future<void> checkSession() async {
+    // Cek SharedPreferences untuk mendapatkan tcrName (nama pengguna)
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? name = prefs.getString('tcrName'); // Ambil tcrName dari shared preferences
+    setState(() {
+      tcrName = name; // Update state dengan nama pengguna atau null jika belum ada
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.yellow,
-        leading: Icon(Icons.arrow_back, color: Colors.black),
         title: Row(
           children: [
             Image.asset('assets/images/edusynclogo.png', height: 100),
@@ -33,21 +57,6 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Search Bar
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Search for Courses...",
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
-                ),
-              ),
-              SizedBox(height: 20),
-
-              // Module Screen Section
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -61,113 +70,129 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage:
-                          AssetImage('assets/images/profile_picture.png'),
-                    ),
-                    SizedBox(width: 10), // Add spacing between the image and text
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child: tcrName == null
+                    ? Column(
                         children: [
-                          Text(
-                            'Hello, teacher_name!',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          Center(
+                            child: Text(
+                              'Login/Register to access full features.',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
                             ),
                           ),
-                          SizedBox(height: 5),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/login');
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 64, 103, 194)),
+                                ),
+                                child: Text('Login', style: TextStyle(color: Colors.white),),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/register');
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(Colors.green.shade500),
+                                ),
+                                child: Text('Register', style: TextStyle(color: Colors.white),),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundImage:
+                                    AssetImage('assets/images/profile_picture.png'),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Hello, $tcrName!',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'What would you like to learn today?',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    SizedBox(height: 10),
+                                    LinearProgressIndicator(
+                                      value: 0.6,
+                                      backgroundColor: Colors.grey.shade200,
+                                      valueColor:
+                                          AlwaysStoppedAnimation<Color>(Colors.green),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
                           Text(
-                            'What would you like to learn today?',
-                            style: TextStyle(color: Colors.grey),
+                            'Available Courses',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 10),
-                          LinearProgressIndicator(
-                            value: 0.6,
-                            backgroundColor: Colors.grey.shade200,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.green),
+                          GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            children: [
+                              _buildSubjectButton(
+                                  context,
+                                  'Teaching Highschool \nMathematics',
+                                  'assets/images/math.svg',
+                                  Colors.blue),
+                              _buildSubjectButton(
+                                  context,
+                                  'Teaching Highschool Biology',
+                                  'assets/images/biology.svg',
+                                  Colors.green),
+                              _buildSubjectButton(
+                                  context,
+                                  'Curriculum Planning',
+                                  'assets/images/geography.svg',
+                                  Colors.orange),
+                              _buildSubjectButton(
+                                  context,
+                                  'Educational Management',
+                                  'assets/images/history.svg',
+                                  Colors.red),
+                              _buildSubjectButton(
+                                  context,
+                                  'Learning Strategies',
+                                  'assets/images/english.svg',
+                                  Colors.yellow),
+                              _buildSubjectButton(
+                                  context,
+                                  'See others...',
+                                  'assets/images/others.png',
+                                  Colors.black),
+                            ],
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
               ),
               SizedBox(height: 20),
-
-              // Grade Section
-              Text(
-                'Teacher - Kurikulum Merdeka',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              SizedBox(height: 10),
-
-              // Available Subjects Section
-              Text(
-                'Available Courses',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                children: [
-                  _buildSubjectButton(context, 'Teaching Highschool \nMathematics',
-                      'assets/images/math.svg', Colors.blue),
-                  _buildSubjectButton(context, 'Teaching Highschool Biology',
-                      'assets/images/biology.svg', Colors.green),
-                  _buildSubjectButton(context, 'Curriculum Planning',
-                      'assets/images/geography.svg', Colors.orange),
-                  _buildSubjectButton(context, 'Educational Management',
-                      'assets/images/history.svg', Colors.red),
-                  _buildSubjectButton(context, 'learning Strategies',
-                      'assets/images/english.svg', Colors.yellow),
-                  _buildSubjectButton(context, 'See others...',
-                      'assets/images/others.png', Colors.black),
-                ],
-              ),
-              SizedBox(height: 20),
-
-              // Bottom Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    ),
-                    icon: Icon(Icons.bar_chart, color: Colors.white),
-                    label: Text(
-                      'Learning Reports',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    ),
-                    icon: Icon(Icons.schedule, color: Colors.white),
-                    label: Text(
-                      'AI-Personalized Schedule',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
@@ -179,10 +204,11 @@ class HomeScreen extends StatelessWidget {
       String imagePath, Color backgroundColor) {
     return GestureDetector(
       onTap: () {
+        // Navigate directly to SubjectDetailScreen
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SubjectDetailScreen(subjectName: title),
+            builder: (context) => SubjectDetailScreen(title: title),
           ),
         );
       },
@@ -209,38 +235,19 @@ class HomeScreen extends StatelessWidget {
 }
 
 class SubjectDetailScreen extends StatelessWidget {
-  final String subjectName;
+  final String title;
 
-  SubjectDetailScreen({required this.subjectName});
+  SubjectDetailScreen({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(subjectName),
+        title: Text(title),
       ),
       body: Center(
         child: Text(
-          '$subjectName Details',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
-
-class PlaceholderScreen extends StatelessWidget {
-  final String title;
-
-  PlaceholderScreen(this.title);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(
-          '$title Screen',
+          '$title Details',
           style: TextStyle(fontSize: 24),
         ),
       ),

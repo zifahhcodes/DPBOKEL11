@@ -1,84 +1,114 @@
+import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../JSON/teacture.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseHelper {
-  final databaseName = "auth.db";
+  static final DatabaseHelper _instance = DatabaseHelper._internal();
+  static Database? _database;
 
-  // Tables
-  String teacher = '''
-   CREATE TABLE Teacher (
-   tcrId INTEGER PRIMARY KEY AUTOINCREMENT,
-   fullName TEXT,
-   email TEXT,
-   lecture TEXT,
-   password TEXT
-   )
-   ''';
-
-  // Our connection is ready
-  Future<Database> initDB() async {
-    final databasePath = await getDatabasesPath();
-    final path = join(databasePath, databaseName);
-
-    return openDatabase(path, version: 2, onCreate: (db, version) async {
-      await db.execute(teacher);
-    });
+  factory DatabaseHelper() {
+    return _instance;
   }
 
-  // Function methods for Teacher
+  DatabaseHelper._internal();
 
-  // Authentication
-  Future<bool> authenticate(Teacher tcr) async {
-    final Database db = await initDB();
-    var result = await db.rawQuery(
-        "select * from Teacher where tcrName = '${tcr.tcrName}' AND password = '${tcr.password}' ");
-    return result.isNotEmpty;
+  // Initialize the database
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
   }
 
-  // Sign up
-  Future<int> createUser(Teacher tcr) async {
-    final Database db = await initDB();
-    return db.insert("Teacher", tcr.toMap());
-  }
+  Future<Database> _initDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'teacher_database.db');
 
-  // Get current User details
-  Future<Teacher?> getUser(String tcrName, String password) async {
-    final Database db = await initDB();
-    var result = await db.query(
-      "Teacher",
-      where: "tcrName = ? AND password = ?",
-      whereArgs: [tcrName, password],
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
     );
+  }
 
-    if (result.isNotEmpty) {
-      return Teacher.fromMap(result.first); // Return the user details
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE Teacher(
+        tcrId INTEGER PRIMARY KEY AUTOINCREMENT,
+        fullName TEXT,
+        email TEXT,
+        tcrName TEXT NOT NULL,
+        password TEXT NOT NULL
+      )
+    ''');
+  }
+
+  // Insert a teacher into the database
+  Future<int> insertTeacher(Teacher teacher) async {
+    final db = await database;
+    return await db.insert(
+      'Teacher',
+      teacher.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  // Fetch all teachers from the database
+  Future<List<Teacher>> fetchAllTeachers() async {
+    final db = await database;
+    final result = await db.query('Teacher');
+
+    return result.map((json) => Teacher.fromMap(json)).toList();
+  }
+
+  // Fetch a teacher by tcrName and password for authentication
+  Future<bool> authenticate(Teacher teacher) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        'Teacher',
+        where: 'tcrName = ? AND password = ?',
+        whereArgs: [teacher.tcrName, teacher.password],
+      );
+      return result.isNotEmpty;
+    } catch (e) {
+      print('Authentication error: $e');
+      return false;
     }
-    return null;
   }
 
-  // Function methods for jobs
-
-  // Insert a job into the jobs table
-  Future<void> insertJob(Map<String, dynamic> job) async {
-    final Database db = await initDB();
-    await db.insert('jobs', job, conflictAlgorithm: ConflictAlgorithm.replace);
+  // Update a teacher in the database
+  Future<int> updateTeacher(Teacher teacher) async {
+    final db = await database;
+    return await db.update(
+      'Teacher',
+      teacher.toMap(),
+      where: 'tcrId = ?',
+      whereArgs: [teacher.tcrId],
+    );
   }
 
-  // Retrieve all jobs from the jobs table
-  Future<List<Map<String, dynamic>>> getJobs() async {
-    final Database db = await initDB();
-    return db.query('jobs');
+  // Delete a teacher from the database
+  Future<int> deleteTeacher(int id) async {
+    final db = await database;
+    return await db.delete(
+      'Teacher',
+      where: 'tcrId = ?',
+      whereArgs: [id],
+    );
   }
 
-  Future<void> clearAllTables() async {
-    final Database db = await initDB();
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('tcrName'); // Clear the stored session data
+  }
 
-    // Delete all records from the Teacher table
-    await db.delete('Teacher');
-
-    // Delete all records from the jobs table
-    await db.delete('jobs');
+  // Close the database
+  Future<void> closeDatabase() async {
+    final db = await _database;
+    if (db != null) {
+      await db.close();
+    }
   }
 }

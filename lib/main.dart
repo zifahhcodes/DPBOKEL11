@@ -1,20 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sqflite/sqflite.dart';
+import 'database/database_helper.dart';
 import 'pages/dashboard_screen.dart';
 import 'pages/home_screen.dart';
-// import 'pages/messaging.dart';
+import 'pages/login.dart';
+import 'pages/register.dart';
 import 'pages/profile.dart';
+import 'pages/dbviewer.dart';
+import 'dart:io';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final bool isDesktop = (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+
+
+  if (isDesktop) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
+  try {
+    await DatabaseHelper().database; // Ensure database is initialized
+    print('Database initialized successfully.');
+  } catch (e) {
+    print('Database initialization error: $e');
+  }
+
   runApp(MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
   @override
+  
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DashboardScreen(),
+      initialRoute: '/', // Set the initial route
+      routes: {   // Register screen route
+        '/login': (context) => LoginPage(),      // Login screen route
+        '/register': (context) => RegisterPage(),     // Register screen route
+      },
     );
   }
 }
